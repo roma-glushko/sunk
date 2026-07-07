@@ -17,9 +17,22 @@ spec:
     PasswordAuthentication yes
     KbdInteractiveAuthentication yes
   replicas: {{ $loginset.replicas | default 1 }}
+  template:
+    spec:
+      terminationGracePeriodSeconds: 7200
   login:
     image: "{{ $loginset.login.image.repository }}:{{ $loginset.login.image.tag }}"
     imagePullPolicy: IfNotPresent
+    lifecycle:
+      preStop:
+        exec:
+          command:
+            - bash
+            - -c
+            - |
+              while pgrep -x sshd-session > /dev/null; do
+                sleep 5
+              done
   initconf:
     image: docker.io/library/alpine:latest
     imagePullPolicy: IfNotPresent
