@@ -18,11 +18,11 @@ task dev
 
 ## Connection
 
-| Service       | URL                        |
-|---------------|----------------------------|
-| HTTP (Traefik)| http://localhost:8080       |
-| HTTPS         | https://localhost:8443      |
-| SSH (login)   | `ssh -p 2222 root@localhost`|
+| Service        | URL                                                |
+|----------------|----------------------------------------------------|
+| HTTP (Traefik) | http://localhost:8080                              |
+| HTTPS          | https://localhost:8443                             |
+| SSH (login)    | `ssh -p 2222 research@localhost` (password: `pass` |
 
 ## Teardown
 
