@@ -1,0 +1,27 @@
+{{- range $key, $loginset := .Values.slurm.loginsets }}
+{{- if $loginset.enabled }}
+---
+apiVersion: slinky.slurm.net/v1beta1
+kind: LoginSet
+metadata:
+  name: {{ include "sunk.fullname" $ }}-{{ $key }}
+  labels:
+    {{- include "sunk.labels" $ | nindent 4 }}
+spec:
+  controllerRef:
+    name: {{ include "sunk.fullname" $ }}
+  sssdConfRef:
+    name: {{ include "sunk.fullname" $ }}-sssd
+    key: sssd.conf
+  replicas: {{ $loginset.replicas | default 1 }}
+  login:
+    image: "{{ $loginset.login.image.repository }}:{{ $loginset.login.image.tag }}"
+    imagePullPolicy: IfNotPresent
+  initconf:
+    image: docker.io/library/alpine:latest
+    imagePullPolicy: IfNotPresent
+  service:
+    spec:
+      type: {{ $loginset.serviceType | default "ClusterIP" }}
+{{- end }}
+{{- end }}

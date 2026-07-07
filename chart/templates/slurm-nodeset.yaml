@@ -1,0 +1,31 @@
+{{- range $key, $nodeset := .Values.slurm.nodesets }}
+{{- if $nodeset.enabled }}
+---
+apiVersion: slinky.slurm.net/v1beta1
+kind: NodeSet
+metadata:
+  name: {{ include "sunk.fullname" $ }}-{{ $key }}
+  labels:
+    {{- include "sunk.labels" $ | nindent 4 }}
+spec:
+  controllerRef:
+    name: {{ include "sunk.fullname" $ }}
+  replicas: {{ $nodeset.replicas | default 1 }}
+  scalingMode: {{ $nodeset.scalingMode | default "StatefulSet" }}
+  {{- with $nodeset.partition }}
+  partition:
+    enabled: {{ .enabled }}
+  {{- end }}
+  slurmd:
+    image: "{{ $nodeset.slurmd.image.repository }}:{{ $nodeset.slurmd.image.tag }}"
+    imagePullPolicy: IfNotPresent
+  logfile:
+    image: docker.io/library/alpine:latest
+    imagePullPolicy: IfNotPresent
+  ordinalPadding: 0
+  pinToNode: false
+  workloadDisruptionProtection: true
+  pruneSlurmNodeRecords: Never
+  oversubscribeNode: false
+{{- end }}
+{{- end }}

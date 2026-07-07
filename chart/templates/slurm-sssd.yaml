@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "sunk.fullname" . }}-sssd
+  labels:
+    {{- include "sunk.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  sssd.conf: |
+    [sssd]
+    services = nss,pam
+    domains = DEFAULT
+
+    [nss]
+    filter_groups = root,slurm
+    filter_users = root,slurm
+
+    [pam]
+
+    [domain/DEFAULT]
+    id_provider = proxy
+    proxy_lib_name = files
+    auth_provider = proxy
+    proxy_pam_target = sssd-shadowutils

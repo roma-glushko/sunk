@@ -1,0 +1,51 @@
+slurm:
+  clusterName: sunk
+
+  controller:
+    slurmctld:
+      image:
+        repository: ghcr.io/slinkyproject/slurmctld
+        tag: 26.05-ubuntu26.04
+    reconfigure:
+      image:
+        repository: ghcr.io/slinkyproject/slurmctld
+        tag: 26.05-ubuntu26.04
+    persistence:
+      storageClassName: null
+      size: 4Gi
+
+  accounting:
+    enabled: true
+    slurmdbd:
+      image:
+        repository: ghcr.io/slinkyproject/slurmdbd
+        tag: 26.05-ubuntu26.04
+    storageConfig:
+      host: mariadb
+      port: 3306
+      database: slurm_acct_db
+      username: slurm
+      passwordSecretRef:
+        name: mariadb-password
+        key: password
+
+  loginsets:
+    login:
+      enabled: true
+      replicas: 1
+      serviceType: LoadBalancer
+      login:
+        image:
+          repository: ghcr.io/slinkyproject/login
+          tag: 26.05-ubuntu26.04
+
+  nodesets:
+    workers:
+      enabled: true
+      replicas: 1
+      slurmd:
+        image:
+          repository: ghcr.io/slinkyproject/slurmd
+          tag: 26.05-ubuntu26.04
+      partition:
+        enabled: true

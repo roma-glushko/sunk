@@ -1,0 +1,26 @@
+{{- if .Values.slurm.accounting.enabled }}
+apiVersion: slinky.slurm.net/v1beta1
+kind: Accounting
+metadata:
+  name: {{ include "sunk.fullname" . }}
+  labels:
+    {{- include "sunk.labels" . | nindent 4 }}
+spec:
+  slurmKeyRef:
+    name: {{ include "sunk.fullname" . }}-slurm-key
+    key: slurm.key
+  jwtKeyRef:
+    name: {{ include "sunk.fullname" . }}-jwt-key
+    key: jwt.key
+  slurmdbd:
+    image: "{{ .Values.slurm.accounting.slurmdbd.image.repository }}:{{ .Values.slurm.accounting.slurmdbd.image.tag }}"
+    imagePullPolicy: IfNotPresent
+  storageConfig:
+    host: {{ .Values.slurm.accounting.storageConfig.host }}
+    port: {{ .Values.slurm.accounting.storageConfig.port }}
+    database: {{ .Values.slurm.accounting.storageConfig.database }}
+    username: {{ .Values.slurm.accounting.storageConfig.username }}
+    passwordKeyRef:
+      name: {{ .Values.slurm.accounting.storageConfig.passwordSecretRef.name }}
+      key: {{ .Values.slurm.accounting.storageConfig.passwordSecretRef.key }}
+{{- end }}

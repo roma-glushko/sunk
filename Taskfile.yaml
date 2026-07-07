@@ -1,0 +1,33 @@
+version: "3"
+
+vars:
+  CLUSTER: 'slurm'
+  REGISTRY_PORT: '8800'
+
+tasks:
+  cluster-start:
+    desc: Start the cluster
+    cmd: >-
+      k3d cluster create {{.CLUSTER}} --agents 1
+      --registry-create {{.CLUSTER}}-registry:0.0.0.0:{{.REGISTRY_PORT}}
+      --kubeconfig-update-default --kubeconfig-switch-context
+      -p "8080:80@loadbalancer"
+      -p "8443:443@loadbalancer"
+      -p "2222:22@loadbalancer"
+
+  cluster-ctx:
+    desc: Configure the cluster context
+    cmd: kubectl config set current-context k3d-{{.CLUSTER}}
+
+  cluster-stop:
+    desc: Stop the cluster
+    cmd: k3d cluster delete {{.CLUSTER}}
+
+  dev:
+    desc: Start the whole system
+    deps: [cluster-ctx]
+    cmd: tilt up
+
+  dev-down:
+    desc: Start the whole system
+    cmd: tilt down
