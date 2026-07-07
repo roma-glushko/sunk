@@ -1,0 +1,79 @@
+{{- $domain := .Values.openldap.rootDN | replace "dc=" "" | replace "," "." -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sunk.fullname" . }}-openldap
+  labels:
+    {{- include "sunk.labels" . | nindent 4 }}
+    app.kubernetes.io/component: openldap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "sunk.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: openldap
+  template:
+    metadata:
+      labels:
+        {{- include "sunk.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: openldap
+    spec:
+      containers:
+        - name: openldap
+          image: "{{ .Values.openldap.image.repository }}:{{ .Values.openldap.image.tag }}"
+          ports:
+            - name: ldap
+              containerPort: 389
+          env:
+            - name: LDAP_ORGANISATION
+              value: sunk
+            - name: LDAP_DOMAIN
+              value: {{ $domain }}
+            - name: LDAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "sunk.fullname" . }}-openldap
+                  key: admin-password
+            - name: LDAP_SEED_INTERNAL_LDIF_PATH
+              value: /ldifs
+          volumeMounts:
+            - name: ldif
+              mountPath: /ldifs
+            - name: data
+              mountPath: /var/lib/ldap
+            - name: config
+              mountPath: /etc/ldap/slapd.d
+      volumes:
+        - name: ldif
+          configMap:
+            name: {{ include "sunk.fullname" . }}-openldap-ldif
+        - name: data
+          emptyDir: {}
+        - name: config
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sunk.fullname" . }}-openldap
+  labels:
+    {{- include "sunk.labels" . | nindent 4 }}
+    app.kubernetes.io/component: openldap
+spec:
+  ports:
+    - port: 389
+      targetPort: ldap
+      name: ldap
+  selector:
+    {{- include "sunk.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: openldap
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "sunk.fullname" . }}-openldap
+  labels:
+    {{- include "sunk.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  admin-password: {{ .Values.openldap.adminPassword }}

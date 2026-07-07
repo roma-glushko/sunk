@@ -13,6 +13,9 @@ spec:
   sssdConfRef:
     name: {{ include "sunk.fullname" $ }}-sssd
     key: sssd.conf
+  extraSshdConfig: |
+    PasswordAuthentication yes
+    KbdInteractiveAuthentication yes
   replicas: {{ $loginset.replicas | default 1 }}
   login:
     image: "{{ $loginset.login.image.repository }}:{{ $loginset.login.image.tag }}"

@@ -8,8 +8,8 @@ type: Opaque
 stringData:
   sssd.conf: |
     [sssd]
-    services = nss,pam
-    domains = DEFAULT
+    services = nss,pam,ssh
+    domains = LDAP
 
     [nss]
     filter_groups = root,slurm
@@ -17,8 +17,22 @@ stringData:
 
     [pam]
 
-    [domain/DEFAULT]
-    id_provider = proxy
-    proxy_lib_name = files
-    auth_provider = proxy
-    proxy_pam_target = sssd-shadowutils
+    [ssh]
+
+    [domain/LDAP]
+    id_provider = ldap
+    auth_provider = ldap
+    ldap_uri = ldap://{{ include "sunk.fullname" . }}-openldap.{{ .Release.Namespace }}.svc.cluster.local
+    ldap_search_base = {{ .Values.openldap.rootDN }}
+    ldap_default_bind_dn = cn=admin,{{ .Values.openldap.rootDN }}
+    ldap_default_authtok = {{ .Values.openldap.adminPassword }}
+    ldap_user_search_base = ou=users,{{ .Values.openldap.rootDN }}
+    ldap_group_search_base = ou=groups,{{ .Values.openldap.rootDN }}
+    ldap_id_use_start_tls = false
+    ldap_tls_reqcert = never
+    ldap_auth_disable_tls_never_use_in_production = true
+    ldap_user_ssh_public_key = sshPublicKey
+    lookup_family_order = ipv4_only
+    entry_cache_timeout = 60
+    ldap_enumeration_refresh_timeout = 60
+    ldap_purge_cache_timeout = 60
