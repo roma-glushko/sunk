@@ -1,0 +1,10 @@
+{{- if .Values.slurm.config }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sunk.fullname" . }}-config
+  labels:
+    {{- include "sunk.labels" . | nindent 4 }}
+data:
+  {{- toYaml .Values.slurm.config | nindent 2 }}
+{{- end }}

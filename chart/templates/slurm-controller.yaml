@@ -10,6 +10,10 @@ spec:
   accountingRef:
     name: {{ include "sunk.fullname" . }}
   {{- end }}
+  {{- if .Values.slurm.config }}
+  configFileRefs:
+    - name: {{ include "sunk.fullname" . }}-config
+  {{- end }}
   slurmKeyRef:
     name: {{ include "sunk.fullname" . }}-slurm-key
     key: slurm.key

@@ -25,7 +25,6 @@ tasks:
 
   dev:
     desc: Start the whole system
-    deps: [cluster-ctx]
     cmd: tilt up
 
   dev-down:

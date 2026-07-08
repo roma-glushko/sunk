@@ -14,6 +14,13 @@ openldap:
 slurm:
   clusterName: sunk
 
+  # config holds key/value pairs mounted as files into /etc/slurm via a ConfigMap.
+  # Keys become filenames (e.g. gres.conf, topology.conf).
+  # Omit this section entirely to skip ConfigMap creation.
+  # config:
+  #   gres.conf: |
+  #     AutoDetect=nvml
+
   controller:
     slurmctld:
       image:
