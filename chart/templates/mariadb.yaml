@@ -7,12 +7,11 @@ spec:
     name: mariadb-root
     key: password
     generate: true
-  username: slurm
-  database: slurm_acct_db
+  username: {{ .Values.slurm.accounting.storageConfig.username }}
+  database: {{ .Values.slurm.accounting.storageConfig.database }}
   passwordSecretKeyRef:
-    name: mariadb-password
-    key: password
-    generate: true
+    name: {{ .Values.slurm.accounting.storageConfig.passwordSecretRef.name }}
+    key: {{ .Values.slurm.accounting.storageConfig.passwordSecretRef.key }}
   storage:
     size: 16Gi
   myCnf: |

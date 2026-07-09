@@ -10,6 +10,12 @@ openldap:
       gid: 10001
       password: pass
       sshPublicKey: ""
+  groups: []
+  # groups:
+  #   - name: researchers
+  #     gid: 20001
+  #     members:
+  #       - research
 
 slurm:
   clusterName: sunk

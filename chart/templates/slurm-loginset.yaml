@@ -10,9 +10,6 @@ metadata:
 spec:
   controllerRef:
     name: {{ include "sunk.fullname" $ }}
-  slurmKeyRef:
-    name: {{ include "sunk.fullname" $ }}-slurm-key
-    key: slurm.key
   sssdConfRef:
     name: {{ include "sunk.fullname" $ }}-sssd
     key: sssd.conf

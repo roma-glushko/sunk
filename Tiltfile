@@ -40,12 +40,14 @@ helm_resource(
     resource_deps=['slurm-operator-crds'],
 )
 
+flags = ['--values=chart/values.local.yaml'] if os.path.exists('chart/values.local.yaml') else []
+
 # -- Sunk chart --
 helm_resource(
     'sunk',
     'chart',
     namespace='sunk',
-    flags=['--create-namespace'],
+    flags=['--create-namespace'] + flags,
     labels=['sunk'],
     deps=['chart'],
     resource_deps=['mariadb-operator-deploy', 'slurm-operator-deploy'],

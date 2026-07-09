@@ -29,4 +29,5 @@ tasks:
 
   dev-down:
     desc: Start the whole system
-    cmd: tilt down
+    cmds:
+      - tilt down
